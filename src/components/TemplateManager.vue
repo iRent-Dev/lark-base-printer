@@ -39,7 +39,7 @@
 <script>
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { toRaw } from 'vue';
+import { applyTemplate } from '@/plugins/content';
 import { Delete, DocumentAdd, Files } from '@element-plus/icons-vue'
 import Login from '@/components/Login.vue'
 

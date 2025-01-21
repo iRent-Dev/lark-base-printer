@@ -42,7 +42,6 @@ import LarkFieldsList from '@/components/LarkFieldsList.vue'
 
 import { registerButtons } from '@/plugins/tinymce-plugins';
 import { applyTemplate, revertTemplate } from '@/plugins/content';
-import { is } from 'date-fns/locale';
 
 export default {
   components: {
