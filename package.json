@@ -1,0 +1,25 @@
+{
+  "name": "new-printer-app-vite",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@lark-base-open/js-sdk": "^0.4.0",
+    "@tinymce/tinymce-vue": "^6.1.0",
+    "date-fns": "^4.1.0",
+    "element-plus": "^2.9.3",
+    "html2pdf.js": "^0.9.0",
+    "tinymce": "^7.6.0",
+    "uuid": "^11.0.4",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^6.0.5"
+  }
+}

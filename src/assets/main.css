@@ -1,0 +1,22 @@
+body{
+  width: 100%;
+}
+
+.el-page-header__back {
+  display: none !important;
+}
+
+.first-level{
+  background-color: #ECF5FF !important;
+}
+
+.first-level > el-button {
+  background-color: #F2F6FF !important;
+}
+
+.el-card__body{
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  padding-top: 5px !important;
+  padding-right: 5px !important;
+}
