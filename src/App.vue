@@ -9,7 +9,7 @@
         v-model="content" />
       <LarkFieldsList :editorInstance="editorInstance" v-model:isOpen.sync="isOpenDrawer"></LarkFieldsList>
     </div>
-    <el-dialog v-model="isPrintSettingsVisible"  title="列印設定" width="50%">
+    <el-dialog v-model="isPrintSettingsVisible"  title="列印設定" width="80%">
           <el-form :model="form" label-width="120px">
             <el-form-item label="列印方向">
               <el-radio-group v-model="printSettings.orientation">
