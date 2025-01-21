@@ -3,7 +3,7 @@
     <div class="container ">
       <TemplateManager :is-edited="isEdited" v-model:content.sync="content" v-model:selected-template.sync="selectedTemplate" />
       <EditorToolBar v-model:is-edited="isEdited" v-model:isOpenDrawer.sync="isOpenDrawer" :editorInstance="editorInstance" :toggleEditorMode="toggleEditorMode"/>
-      <Editor id="editor" tinymce-script-src="/printer/tinymce/tinymce.min.js" :init="editorConfig" v-model="content" />
+      <Editor id="editor" tinymce-script-src="/lark-base-printer/tinymce/tinymce.min.js" :init="editorConfig" v-model="content" />
       <LarkFieldsList :editorInstance="editorInstance" v-model:isOpen.sync="isOpenDrawer"></LarkFieldsList>
     </div>
   </div>
