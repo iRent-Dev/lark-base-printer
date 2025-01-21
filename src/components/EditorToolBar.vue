@@ -8,6 +8,7 @@
           <el-button @click="toggleDrawer" :disabled="!isEdited">
             <el-icon><Plus /></el-icon>插入多維表格變數
           </el-button>
+          <el-button @click="openPrintSettings">列印設定</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -25,10 +26,11 @@
     components: {
       Plus
     },
-    emits: ["update:isEdited", "update:isOpenDrawer"],
+    emits: ["update:isEdited", "update:isOpenDrawer", "update:isPrintSettingsVisible"],
     data() {
       return {
         isEdited: this.isEdited,  // 初始化時使用 props 傳遞的值
+        isPrintSettingsVisible: false
       };
     },
     watch: {
@@ -43,6 +45,9 @@
     methods: {
       toggleDrawer() {
         this.$emit('update:isOpenDrawer', true);
+      },
+      openPrintSettings() {
+        this.$emit('update:isPrintSettingsVisible', true);
       }
     }
   }

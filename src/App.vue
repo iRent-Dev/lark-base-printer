@@ -1,11 +1,36 @@
 <template>
   <div>
     <div class="container ">
-      <TemplateManager :is-edited="isEdited" v-model:content.sync="content" v-model:selected-template.sync="selectedTemplate" />
-      <EditorToolBar v-model:is-edited="isEdited" v-model:isOpenDrawer.sync="isOpenDrawer" :editorInstance="editorInstance" :toggleEditorMode="toggleEditorMode"/>
-      <Editor id="editor" tinymce-script-src="/lark-base-printer/tinymce/tinymce.min.js" :init="editorConfig" v-model="content" />
+      <TemplateManager :is-edited="isEdited" v-model:content.sync="content"
+        v-model:selected-template.sync="selectedTemplate" />
+      <EditorToolBar v-model:is-edited="isEdited" v-model:isOpenDrawer.sync="isOpenDrawer"
+        :editorInstance="editorInstance" :toggleEditorMode="toggleEditorMode" v-model:isPrintSettingsVisible.sync="isPrintSettingsVisible"/>
+      <Editor id="editor" tinymce-script-src="/lark-base-printer/tinymce/tinymce.min.js" :init="editorConfig"
+        v-model="content" />
       <LarkFieldsList :editorInstance="editorInstance" v-model:isOpen.sync="isOpenDrawer"></LarkFieldsList>
     </div>
+    <el-dialog v-model="isPrintSettingsVisible"  title="列印設定" width="30%">
+          <el-form :model="form" label-width="120px">
+            <el-form-item label="列印方向">
+              <el-radio-group v-model="printSettings.orientation">
+                <el-radio label="portrait">直向</el-radio>
+                <el-radio label="landscape">橫向</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="上邊距">
+              <el-input-number v-model="printSettings.marginTop" :min="0" label="上邊距"></el-input-number>
+            </el-form-item>
+            <el-form-item label="下邊距">
+              <el-input-number v-model="printSettings.marginBottom" :min="0" label="下邊距"></el-input-number>
+            </el-form-item>
+            <el-form-item label="左邊距">
+              <el-input-number v-model="printSettings.marginLeft" :min="0" label="左邊距"></el-input-number>
+            </el-form-item>
+            <el-form-item label="右邊距">
+              <el-input-number v-model="printSettings.marginRight" :min="0" label="右邊距"></el-input-number>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
   </div>
 </template>
 
@@ -17,7 +42,7 @@ import LarkFieldsList from '@/components/LarkFieldsList.vue'
 
 import { registerButtons } from '@/plugins/tinymce-plugins';
 import { applyTemplate, revertTemplate } from '@/plugins/content';
-
+import { is } from 'date-fns/locale';
 
 export default {
   components: {
@@ -33,6 +58,14 @@ export default {
       isOpenDrawer: false,
       editorInstance: null,
       content: "",
+      printSettings: {
+        orientation: 'portrait',
+        marginTop: 10,
+        marginBottom: 10,
+        marginLeft: 10,
+        marginRight: 10,
+      },
+      isPrintSettingsVisible: false, // 控制列印設置彈窗的顯示與隱藏
     };
   },
   computed: {
@@ -66,21 +99,28 @@ export default {
           editor.on('init', () => {
             this.toggleEditorMode();  // 根據 isEdited 設定模式
           });
-        },
-        content_style: `
-          @media print {
-            @page {
-              margin-top: 10px;
-              margin-left: 20px;
-              margin-right: 20px;
-            }
-            body {
-              margin: 0;
-            }
-            /* 其他自訂樣式 */
-          }
-        `
+        }
       };
+    },
+
+    dynamicContentStyle() {
+      return `
+        @media print {
+          @page {
+            margin-top: ${this.printSettings.marginTop}px;
+            margin-bottom: ${this.printSettings.marginBottom}px;
+            margin-left: ${this.printSettings.marginLeft}px;
+            margin-right: ${this.printSettings.marginRight}px;
+            ${this.printSettings.orientation === 'landscape' ? 'size: landscape;' : 'size: portrait;'}
+          }
+        }
+      `;
+    }
+  },
+  watch: {
+    // 監控 dynamicContentStyle 的變化，並呼叫 updateEditorStyle 更新樣式
+    dynamicContentStyle(newStyle) {
+      this.updateEditorStyle();
     }
   },
   mounted() {
@@ -101,7 +141,7 @@ export default {
     },
     applyIframeStyles() {
       const iframe = this.editorInstance.iframeElement;
-      if (iframe){
+      if (iframe) {
         if (this.isEdited) {
           iframe.style.pointerEvents = 'auto';   // 恢復點擊
           iframe.style.userSelect = 'text';      // 恢復選取
@@ -111,6 +151,36 @@ export default {
           iframe.style.userSelect = 'none';     // 禁止選取內容
           iframe.contentDocument.body.style.cursor = 'default'; // 游標消失
         }
+      }
+    },
+
+    openPrintSettings() {
+      this.isPrintSettingsVisible = true;
+    },
+
+    handlePrintSettings(settings) {
+      this.printSettings = settings;
+      this.updateEditorStyle();
+      this.isPrintSettingsVisible = false;
+    },
+
+    updateEditorStyle() {
+      const iframe = this.editorInstance.iframeElement;
+      if (iframe && iframe.contentDocument) {
+        const head = iframe.contentDocument.head;
+
+        // 查找是否已經有我們插入的 style 標籤
+        let existingStyleTag = iframe.contentDocument.getElementById('dynamic-style-tag');
+
+        if (!existingStyleTag) {
+          // 如果沒有，創建一個新的 style 標籤
+          existingStyleTag = iframe.contentDocument.createElement('style');
+          existingStyleTag.id = 'dynamic-style-tag';  // 設置 id 來避免重複
+          head.appendChild(existingStyleTag);  // 添加到 head
+        }
+
+        // 更新 style 標籤的內容
+        existingStyleTag.innerHTML = this.dynamicContentStyle;
       }
     }
   }
