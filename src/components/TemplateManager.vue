@@ -100,7 +100,10 @@ export default {
                 { uuid: templateId },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('irent_token')}` } }
             )
-            const content = response.data.content;
+            let content = response.data.content;
+            if (!this.isEdited){
+                content = await applyTemplate(content)
+            }
             this.$emit("update:content", content);
         },
         onTemplateChange() {
