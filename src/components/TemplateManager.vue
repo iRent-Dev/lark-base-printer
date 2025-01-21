@@ -30,7 +30,7 @@
             </el-button>
         </el-button-group>
         <!-- 登入彈窗 -->
-        <el-dialog title="Login" v-model="isLoginDialogVisible" width="30%">
+        <el-dialog title="Login" v-model="isLoginDialogVisible" width="90%">
             <Login @login="handleLogin" />
         </el-dialog>
     </div>
