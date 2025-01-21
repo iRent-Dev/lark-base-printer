@@ -67,8 +67,8 @@ export async function applyTemplate(content) {
       }
     }
   }
-
-  return doc.body.innerHTML
+  // console.log(doc.body.innerHTML)
+  return doc.body.innerHTML || ''
 }
 
 // **還原樣板**
