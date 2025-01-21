@@ -13,7 +13,7 @@
                 </el-icon>
                 儲存
             </el-button>
-            <el-button @click="createTemplate" type="info">
+            <el-button @click="createTemplate" type="info" :disabled="!isLoggedIn">
                 <el-icon>
                     <DocumentAdd />
                 </el-icon>
