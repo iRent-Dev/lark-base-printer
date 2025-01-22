@@ -1,4 +1,4 @@
-body{
+body {
   width: 100%;
 }
 
@@ -6,15 +6,15 @@ body{
   display: none !important;
 }
 
-.first-level{
-  background-color: #ECF5FF !important;
+.first-level {
+  background-color: #ecf5ff !important;
 }
 
 .first-level > el-button {
-  background-color: #F2F6FF !important;
+  background-color: #f2f6ff !important;
 }
 
-.el-card__body{
+.el-card__body {
   padding-left: 10px !important;
   padding-right: 10px !important;
   padding-top: 5px !important;
