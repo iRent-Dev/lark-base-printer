@@ -6,7 +6,6 @@ export function registerButtons(editor) {
     tooltip: '列印',
     context: 'mode:readonly',  // **僅在 readonly 模式顯示**
     onAction: () => {
-      
       // 执行列印命令
       editor.execCommand('mcePrint')
     }
@@ -20,12 +19,22 @@ export function registerButtons(editor) {
         this.showNotification(editor, '請先套用樣板才能匯出 PDF！', 'warning')
         return
       }
+
+      const pdfName = prompt("請輸入想要輸出的 PDF 檔案名稱", "sample.pdf");
+
+      const content = editor.getContent()
+      const printSettings = editor.printSettings
       
-      html2pdf().from(editor.getContent()).set({
-        margin: 10,
-        filename: '內容輸出.pdf',
+      html2pdf().from(content).set({
+        margin: [
+          printSettings.marginTop,
+          printSettings.marginRight,
+          printSettings.marginBottom,
+          printSettings.marginLeft,
+        ],
+        filename: pdfName,
         html2canvas: { scale: 2 },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+        jsPDF: { orientation: printSettings.orientation, unit: 'mm', format: 'a4' }
       }).save().then(() => {
         this.showNotification(editor, 'PDF 匯出成功！', 'success')
       })

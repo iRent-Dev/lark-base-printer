@@ -94,6 +94,7 @@ export default {
         setup: (editor) => {
           this.editorInstance = editor;
           registerButtons(editor); // 註冊客製化按鈕 
+          editor.printSettings = this.printSettings;
           // 編輯器初始化完成後
           editor.on('init', () => {
             this.toggleEditorMode();  // 根據 isEdited 設定模式
