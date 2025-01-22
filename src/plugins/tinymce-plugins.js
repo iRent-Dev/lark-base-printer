@@ -1,6 +1,6 @@
 import html2pdf from "html2pdf.js"
 
-export function registerButtons(editor) {
+export function registerButtons(editor,getPrintSettings) {
    editor.ui.registry.addButton('newprint', {
     icon: 'print',
     tooltip: '列印',
@@ -21,9 +21,9 @@ export function registerButtons(editor) {
       }
 
       const pdfName = prompt("請輸入想要輸出的 PDF 檔案名稱", "sample.pdf");
-
+      
       const content = editor.getContent()
-      const printSettings = editor.printSettings
+      const printSettings = getPrintSettings()
       
       html2pdf().from(content).set({
         margin: [

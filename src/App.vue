@@ -8,29 +8,10 @@
       <Editor id="editor" tinymce-script-src="/lark-base-printer/tinymce/tinymce.min.js" :init="editorConfig"
         v-model="content" />
       <LarkFieldsList :editorInstance="editorInstance" v-model:isOpen.sync="isOpenDrawer"></LarkFieldsList>
+      <PrintSettingsDialog :visible="isPrintSettingsVisible" :settings="printSettings" @update:visible="isPrintSettingsVisible = $event" @update:settings="printSettings = $event" />
+
+      {{ printSettings }}
     </div>
-    <el-dialog v-model="isPrintSettingsVisible"  title="列印設定" width="80%">
-          <el-form :model="form" label-width="120px">
-            <el-form-item label="列印方向">
-              <el-radio-group v-model="printSettings.orientation">
-                <el-radio label="portrait">直向</el-radio>
-                <el-radio label="landscape">橫向</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="上邊距">
-              <el-input-number v-model="printSettings.marginTop" :min="0" label="上邊距"></el-input-number>
-            </el-form-item>
-            <el-form-item label="下邊距">
-              <el-input-number v-model="printSettings.marginBottom" :min="0" label="下邊距"></el-input-number>
-            </el-form-item>
-            <el-form-item label="左邊距">
-              <el-input-number v-model="printSettings.marginLeft" :min="0" label="左邊距"></el-input-number>
-            </el-form-item>
-            <el-form-item label="右邊距">
-              <el-input-number v-model="printSettings.marginRight" :min="0" label="右邊距"></el-input-number>
-            </el-form-item>
-          </el-form>
-        </el-dialog>
   </div>
 </template>
 
@@ -39,6 +20,7 @@ import Editor from '@tinymce/tinymce-vue'
 import TemplateManager from '@/components/TemplateManager.vue';
 import EditorToolBar from '@/components/EditorToolBar.vue';
 import LarkFieldsList from '@/components/LarkFieldsList.vue'
+import PrintSettingsDialog from '@/components/PrintSettingsDialog.vue';
 
 import { registerButtons } from '@/plugins/tinymce-plugins';
 import { applyTemplate, revertTemplate } from '@/plugins/content';
@@ -48,7 +30,8 @@ export default {
     Editor,
     EditorToolBar,
     TemplateManager,
-    LarkFieldsList
+    LarkFieldsList,
+    PrintSettingsDialog
   },
   data() {
     return {
@@ -93,8 +76,7 @@ export default {
         },
         setup: (editor) => {
           this.editorInstance = editor;
-          registerButtons(editor); // 註冊客製化按鈕 
-          editor.printSettings = this.printSettings;
+          registerButtons(editor,() => this.printSettings); // 註冊客製化按鈕 
           // 編輯器初始化完成後
           editor.on('init', () => {
             this.toggleEditorMode();  // 根據 isEdited 設定模式
@@ -120,6 +102,7 @@ export default {
   watch: {
     // 監控 dynamicContentStyle 的變化，並呼叫 updateEditorStyle 更新樣式
     dynamicContentStyle(newStyle) {
+      console.log("dynamicContentStyle changed:", newStyle);
       this.updateEditorStyle();
     }
   },
