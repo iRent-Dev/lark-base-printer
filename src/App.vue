@@ -9,8 +9,6 @@
         v-model="content" />
       <LarkFieldsList :editorInstance="editorInstance" v-model:isOpen.sync="isOpenDrawer"></LarkFieldsList>
       <PrintSettingsDialog :visible="isPrintSettingsVisible" :settings="printSettings" @update:visible="isPrintSettingsVisible = $event" @update:settings="printSettings = $event" />
-
-      {{ printSettings }}
     </div>
   </div>
 </template>
