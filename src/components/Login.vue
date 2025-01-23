@@ -1,21 +1,18 @@
 <template>
   <el-form :model="loginForm" ref="loginForm" label-width="100px">
-    <el-form-item label="Username" prop="username">
-      <el-input
-        v-model="loginForm.username"
-        placeholder="Enter your username"
-      />
+    <el-form-item label="帳號" prop="username">
+      <el-input v-model="loginForm.username" placeholder="輸入帳號"" />
     </el-form-item>
-    <el-form-item label="Password" prop="password">
+    <el-form-item label="密碼" prop="password">
       <el-input
         v-model="loginForm.password"
-        placeholder="Enter your password"
+        placeholder="輸入密碼"
         show-password
         type="password"
       />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="handleLogin">Login</el-button>
+      <el-button type="primary" @click="handleLogin">登入</el-button>
     </el-form-item>
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </el-form>
