@@ -21,62 +21,68 @@ export async function applyTemplate(content) {
   }
 
   for (let field of fields) {
+    field.style.color = "inherit";
     const tableId = field.getAttribute("data-tableid");
     const fieldId = field.getAttribute("data-fieldid");
     const fieldType = field.getAttribute("data-fieldtype");
     const father_fieldId = field.getAttribute("data-father-field");
 
-    if (father_fieldId != "*") {
-      const father_fieldData = await activeTable.getFieldById(father_fieldId);
-      const father_fieldObject = await father_fieldData.getValue(recordId);
-      const sub_table = await bitable.base.getTableById(tableId);
-      let resultHtml = "";
-      if (father_fieldObject == null) {
-        field.innerText = "";
-      } else {
-        let result_array = [];
-        for (
-          let index = 0;
-          index < father_fieldObject.recordIds.length;
-          index++
-        ) {
-          const sub_recordId = father_fieldObject.recordIds[index];
-          const fieldData = await sub_table.getFieldById(fieldId);
-          const fieldMeta = await sub_table.getFieldMetaById(fieldId);
-          const fieldObject = await fieldData.getValue(sub_recordId);
+    try {
+      if (father_fieldId != "*") {
+        const father_fieldData = await activeTable.getFieldById(father_fieldId);
+        const father_fieldObject = await father_fieldData.getValue(recordId);
+        const sub_table = await bitable.base.getTableById(tableId);
+        let resultHtml = "";
+        if (father_fieldObject == null) {
+          field.innerText = "";
+        } else {
+          let result_array = [];
+          for (
+            let index = 0;
+            index < father_fieldObject.recordIds.length;
+            index++
+          ) {
+            const sub_recordId = father_fieldObject.recordIds[index];
+            const fieldData = await sub_table.getFieldById(fieldId);
+            const fieldMeta = await sub_table.getFieldMetaById(fieldId);
+            const fieldObject = await fieldData.getValue(sub_recordId);
 
-          result_array.push({
-            object: fieldObject,
-            fieldMeta: fieldMeta,
+            result_array.push({
+              object: fieldObject,
+              fieldMeta: fieldMeta,
+            });
+          }
+
+          Promise.all(
+            result_array.map((item) =>
+              covertFileTypeData(fieldType, item.object, item.fieldMeta)
+            )
+          ).then((results) => {
+            resultHtml = results.join("、"); // 合併結果並設定 innerHTML
+            // console.log("Before setting innerHTML:", field);
+            field.innerHTML = resultHtml;
+            // console.log("After setting innerHTML:", field);
           });
         }
-
-        Promise.all(
-          result_array.map((item) =>
-            covertFileTypeData(fieldType, item.object, item.fieldMeta)
-          )
-        ).then((results) => {
-          resultHtml = results.join("、"); // 合併結果並設定 innerHTML
-          // console.log("Before setting innerHTML:", field);
-          field.innerHTML = resultHtml;
-          // console.log("After setting innerHTML:", field);
-        });
-      }
-      // console.log("resultHtml:", resultHtml);
-      field.innerHTML = field.innerHTML;
-    } else {
-      const fieldData = await activeTable.getFieldById(fieldId);
-      const fieldMeta = await activeTable.getFieldMetaById(fieldId);
-      const fieldObject = await fieldData.getValue(recordId);
-      if (fieldObject == null) {
-        field.innerText = ""; // 無資料
+        // console.log("resultHtml:", resultHtml);
+        field.innerHTML = field.innerHTML;
       } else {
-        field.innerHTML = await covertFileTypeData(
-          fieldType,
-          fieldObject,
-          fieldMeta
-        );
+        const fieldData = await activeTable.getFieldById(fieldId);
+        const fieldMeta = await activeTable.getFieldMetaById(fieldId);
+        const fieldObject = await fieldData.getValue(recordId);
+        if (fieldObject == null) {
+          field.innerText = ""; // 無資料
+        } else {
+          field.innerHTML = await covertFileTypeData(
+            fieldType,
+            fieldObject,
+            fieldMeta
+          );
+        }
       }
+    } catch (error) {
+      field.style.color = "red";
+      field.innerText = "無法取得欄位資料";
     }
   }
   // console.log(doc.body.innerHTML)
