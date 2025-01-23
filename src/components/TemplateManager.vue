@@ -17,7 +17,11 @@
       </el-select>
     </el-button-group>
     <el-button-group style="margin: 20px">
-      <el-button @click="saveTemplate" type="primary" :disabled="!isEdited">
+      <el-button
+        @click="saveTemplate"
+        type="primary"
+        :disabled="!isEdited && !selectedTemplate"
+      >
         <el-icon>
           <Files></Files>
         </el-icon>
@@ -132,16 +136,6 @@ export default {
     },
     async saveTemplate() {
       let templateId = this.selectedTemplate;
-      if (!templateId) {
-        const templateName = prompt("請輸入想要儲存的版面名稱", "sample");
-        templateId = uuidv4();
-        this.irentTemplates.push({ label: templateName, id: templateId });
-        localStorage.setItem(
-          "irent_templates_list",
-          JSON.stringify(this.irentTemplates)
-        );
-      }
-      this.$emit("update:selectedTemplate", templateId);
       const content = this.$attrs.content;
       const response = await axios.post(
         "https://app.larksuite.com.tw/api/src/save_template.php",
@@ -158,7 +152,6 @@ export default {
     async createTemplate() {
       const templateName = prompt("請輸入想要儲存的版面名稱", "sample");
       const templateId = uuidv4();
-      this.irentTemplates.push({ name: templateName, id: templateId });
       // localStorage.setItem('irent_templates_list', JSON.stringify(this.irentTemplates));
       await axios.post(
         "https://app.larksuite.com.tw/api/src/create_template.php",
@@ -169,6 +162,7 @@ export default {
           },
         }
       );
+      this.irentTemplates.push({ name: templateName, id: templateId });
       this.selectedTemplate = templateId;
       this.$emit("update:content", "");
     },
@@ -190,8 +184,14 @@ export default {
             },
           }
         );
-        this.selectedTemplate = this.irentTemplates[0].id || "";
-        this.loadTemplateContent(this.selectedTemplate);
+
+        if (this.irentTemplates.length > 0) {
+          this.selectedTemplate = this.irentTemplates[0].id || "";
+          this.loadTemplateContent(this.selectedTemplate);
+        } else {
+          this.selectedTemplate = "";
+          this.$emit("update:content", "");
+        }
       }
     },
     login() {
@@ -200,6 +200,8 @@ export default {
     logout() {
       localStorage.removeItem("irent_token");
       this.isLoggedIn = false;
+      this.$emit("update:content", "");
+      this.loadTemplates();
     },
     handleLogin(token) {
       // 接收到 token 後執行的邏輯

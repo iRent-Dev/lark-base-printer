@@ -1,5 +1,6 @@
 import { bitable, FieldType } from "@lark-base-open/js-sdk";
 import { format as formatDate } from "date-fns";
+import { fi } from "date-fns/locale";
 // **套用樣板**
 export async function applyTemplate(content) {
   const parser = new DOMParser();
@@ -29,7 +30,7 @@ export async function applyTemplate(content) {
       const father_fieldData = await activeTable.getFieldById(father_fieldId);
       const father_fieldObject = await father_fieldData.getValue(recordId);
       const sub_table = await bitable.base.getTableById(tableId);
-
+      let resultHtml = "";
       if (father_fieldObject == null) {
         field.innerText = "";
       } else {
@@ -55,9 +56,14 @@ export async function applyTemplate(content) {
             covertFileTypeData(fieldType, item.object, item.fieldMeta)
           )
         ).then((results) => {
-          field.innerHTML = results.join(","); // 合併結果並設定 innerHTML
+          resultHtml = results.join("、"); // 合併結果並設定 innerHTML
+          // console.log("Before setting innerHTML:", field);
+          field.innerHTML = resultHtml;
+          // console.log("After setting innerHTML:", field);
         });
       }
+      // console.log("resultHtml:", resultHtml);
+      field.innerHTML = field.innerHTML;
     } else {
       const fieldData = await activeTable.getFieldById(fieldId);
       const fieldMeta = await activeTable.getFieldMetaById(fieldId);
@@ -101,7 +107,7 @@ async function covertFileTypeData(fieldType, valueData, fieldData) {
     case FieldType.Number.toString():
       return Array.isArray(valueData)
         ? valueData.map((item) => item.value).join("、")
-        : valueData;
+        : valueData.value || valueData;
     case FieldType.SingleSelect.toString():
     case FieldType.MultiSelect.toString():
       return Array.isArray(valueData)
@@ -121,7 +127,8 @@ async function covertFileTypeData(fieldType, valueData, fieldData) {
       return valueData;
     case FieldType.Url.toString(): // 超連結
       return valueData.map((item) => `[${item.text}](${item.link})`).join("、");
-    case FieldType.Attachment.toString(): { // 附件  // 這裡比較麻煩
+    case FieldType.Attachment.toString(): {
+      // 附件  // 這裡比較麻煩
       let result = "";
       const tempTable = await bitable.base.getTableById(
         valueData[0].permission.tableId
@@ -134,7 +141,6 @@ async function covertFileTypeData(fieldType, valueData, fieldData) {
       );
       for (let i = 0; i < attachmentUrls.length; i++) {
         const imgUrl = attachmentUrls[i];
-        console.log(imgUrl);
         result += `<img style='width: 100%; height: 100%;' src='${imgUrl}' />`;
       }
       return result;

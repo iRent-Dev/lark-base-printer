@@ -125,7 +125,6 @@ export default {
   watch: {
     // 監控 dynamicContentStyle 的變化，並呼叫 updateEditorStyle 更新樣式
     dynamicContentStyle(newStyle) {
-      console.log("dynamicContentStyle changed:", newStyle);
       this.updateEditorStyle();
     },
   },
