@@ -1,12 +1,12 @@
 <template>
   <el-form :model="loginForm" ref="loginForm" label-width="100px">
-    <el-form-item label="帳號" prop="username">
-      <el-input v-model="loginForm.username" placeholder="輸入帳號"" />
+    <el-form-item label="登入" prop="username">
+      <el-input v-model="loginForm.username" placeholder="請輸入你的帳號" />
     </el-form-item>
     <el-form-item label="密碼" prop="password">
       <el-input
         v-model="loginForm.password"
-        placeholder="輸入密碼"
+        placeholder="請輸入你的密碼"
         show-password
         type="password"
       />

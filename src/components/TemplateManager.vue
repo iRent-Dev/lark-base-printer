@@ -44,7 +44,7 @@
       </el-button>
     </el-button-group>
     <!-- 登入彈窗 -->
-    <el-dialog title="登入" v-model="isLoginDialogVisible" width="90%">
+    <el-dialog title="" v-model="isLoginDialogVisible" width="90%">
       <Login @login="handleLogin" />
     </el-dialog>
   </div>
