@@ -1,6 +1,6 @@
 import { bitable, FieldType } from "@lark-base-open/js-sdk";
 import { format as formatDate } from "date-fns";
-import { fi } from "date-fns/locale";
+
 // **套用樣板**
 export async function applyTemplate(content) {
   const parser = new DOMParser();
@@ -29,10 +29,12 @@ export async function applyTemplate(content) {
 
     try {
       if (father_fieldId != "*") {
+        // 關聯欄位
+
         const father_fieldData = await activeTable.getFieldById(father_fieldId);
         const father_fieldObject = await father_fieldData.getValue(recordId);
         const sub_table = await bitable.base.getTableById(tableId);
-        let resultHtml = "";
+
         if (father_fieldObject == null) {
           field.innerText = "";
         } else {
@@ -53,19 +55,26 @@ export async function applyTemplate(content) {
             });
           }
 
-          Promise.all(
+          const results = await Promise.all(
             result_array.map((item) =>
               covertFileTypeData(fieldType, item.object, item.fieldMeta)
             )
-          ).then((results) => {
-            resultHtml = results.join("、"); // 合併結果並設定 innerHTML
-            // console.log("Before setting innerHTML:", field);
-            field.innerHTML = resultHtml;
-            // console.log("After setting innerHTML:", field);
-          });
+          );
+
+          // let resultHtml = results.join(
+          //   "<hr style='border: 1px solid #000; margin-left: 6.4px; margin-right: 6.4px;'/>"
+          // );
+          // field.innerHTML = resultHtml; // **確保這行執行**
+          // **判斷是否在 table 內**
+          let resultHtml = "";
+          if (isInsideTable(field)) {
+            field.parentElement.parentElement.style.padding = "0";
+            resultHtml = convertToTable(field, results);
+          } else {
+            resultHtml = convertToList(results);
+          }
+          field.innerHTML = resultHtml;
         }
-        // console.log("resultHtml:", resultHtml);
-        field.innerHTML = field.innerHTML;
       } else {
         const fieldData = await activeTable.getFieldById(fieldId);
         const fieldMeta = await activeTable.getFieldMetaById(fieldId);
@@ -152,9 +161,11 @@ async function covertFileTypeData(fieldType, valueData, fieldData) {
       return result;
     }
     case FieldType.Lookup.toString(): // 這裡比較麻煩
-      return valueData
-        .map((item) => item.value || item.text || item)
-        .join("、");
+      if (valueData) {
+        return valueData.map((item) => item.text || item.name).join("、");
+      } else {
+        return "";
+      }
     case FieldType.Location.toString():
       return valueData.fullAddress;
     case FieldType.GroupChat.toString():
@@ -197,4 +208,73 @@ async function covertFileTypeData(fieldType, valueData, fieldData) {
     default:
       return valueData;
   }
+}
+
+function isInsideTable(field) {
+  let parent = field.parentElement;
+  while (parent) {
+    if (parent.tagName.toLowerCase() === "table") {
+      return true;
+    }
+    parent = parent.parentElement;
+  }
+  return false;
+}
+
+function convertToTable(field, results) {
+  let parent = field.parentElement;
+  parent.style.padding = "0"; // 避免內部表格有間距
+
+  if (!results || results.length === 0) return "";
+
+  // 建立表格元素
+  const table = document.createElement("table");
+  table.style.borderCollapse = "collapse";
+  table.style.width = "100%";
+
+  // 建立外部 `<tr>`，包含一個大 `<td>`（合併列數）
+  const outerRow = document.createElement("tr");
+  const outerCell = document.createElement("td");
+  outerCell.colSpan = results.length; // 外部 td 合併所有欄位
+  outerCell.style.padding = "0"; // 避免內部表格有間距
+
+  // **建立內部表格**
+  const innerTable = document.createElement("table");
+  innerTable.style.width = "100%";
+  innerTable.style.borderCollapse = "collapse";
+  innerTable.style.border = "none"; // 外框
+
+  // **建立 `tr` / `td`**
+  for (let i = 0; i < results.length; i++) {
+    const row = document.createElement("tr");
+
+    const cell = document.createElement("td");
+    if (i > 0) {
+      cell.style.borderTop = "1px solid black"; // 只加上邊框
+    } else {
+      cell.style.border = "none"; // 第一列不加邊框
+    }
+    cell.style.padding = "8px";
+    cell.innerHTML = results[i]; // 插入對應的資料
+
+    row.appendChild(cell);
+    innerTable.appendChild(row);
+  }
+
+  // 把內部表格加到外部 `td`，再加到 `tr`
+  outerCell.appendChild(innerTable);
+  outerRow.appendChild(outerCell);
+  table.appendChild(outerRow);
+
+  return table.outerHTML; // 回傳完整表格 HTML
+}
+
+function convertToList(values) {
+  let ul = document.createElement("ul");
+  values.forEach((value) => {
+    let li = document.createElement("li");
+    li.innerHTML = value;
+    ul.appendChild(li);
+  });
+  return ul.outerHTML;
 }

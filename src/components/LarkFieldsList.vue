@@ -64,9 +64,11 @@ export default {
     insertVariable(field, father = null, isLink = false) {
       let father_fieldId = "";
       let tableId = "";
+      let fieldName = field.name;
 
       if (isLink) {
         father_fieldId = father.id;
+        fieldName = `${father.name}.${field.name}`;
         tableId = father.property.tableId;
       } else {
         father_fieldId = "*";
@@ -74,14 +76,14 @@ export default {
       }
 
       this.editorInstance.insertContent(`
-          <span class="template-field" contenteditable="false"
+          <div class="template-field" contenteditable="false"
               data-tableid="${tableId}"
               data-fieldid="${field.id}"
-              data-fieldname="${field.name}"
+              data-fieldname="${fieldName}"
               data-fieldtype="${field.type}"
               data-father-field="${father_fieldId}">
-             {{${field.name}}}
-          </span>`);
+             {{${fieldName}}}
+          </div>`);
     },
     toggleDrawer() {
       this.$emit("update:isOpen", !this.isOpen);

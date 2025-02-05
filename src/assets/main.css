@@ -20,3 +20,10 @@ body {
   padding-top: 5px !important;
   padding-right: 5px !important;
 }
+
+.template-field-hr {
+  border: none;
+  border-top: 2px solid #ccc; /* 這是 "格線" 效果 */
+  margin: 0;
+  padding: 0;
+}
