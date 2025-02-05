@@ -1,24 +1,29 @@
-import { bitable, FieldType } from "@lark-base-open/js-sdk";
+import { bitable, FieldType, ToastType } from "@lark-base-open/js-sdk";
 import { format as formatDate } from "date-fns";
 
 // **套用樣板**
 export async function applyTemplate(content) {
+  const activeTable = await bitable.base.getActiveTable();
+  const selection = await bitable.base.getSelection();
+  // console.log("selection", selection);
+
   const parser = new DOMParser();
   const doc = parser.parseFromString(content, "text/html");
   const fields = doc.querySelectorAll(".template-field");
-
-  const activeTable = await bitable.base.getActiveTable();
-  const selection = await bitable.base.getSelection();
 
   let recordId = "";
 
   if (selection.recordId) {
     recordId = selection.recordId;
+    // console.log("selection recordId", recordId);
   } else {
     const view = await activeTable.getViewById(selection.viewId);
     const recordIdList = await view.getVisibleRecordIdList();
     recordId = recordIdList[0];
+    // console.log("Not selection recordId", recordId);
   }
+
+  // console.log("recordId", recordId);
 
   for (let field of fields) {
     field.style.color = "inherit";
@@ -230,6 +235,7 @@ function convertToTable(field, results) {
   // 建立表格元素
   const table = document.createElement("table");
   table.style.borderCollapse = "collapse";
+  table.style.border = "none"; // 外框
   table.style.width = "100%";
 
   // 建立外部 `<tr>`，包含一個大 `<td>`（合併列數）
@@ -237,6 +243,7 @@ function convertToTable(field, results) {
   const outerCell = document.createElement("td");
   outerCell.colSpan = results.length; // 外部 td 合併所有欄位
   outerCell.style.padding = "0"; // 避免內部表格有間距
+  outerCell.style.border = "none"; // 外框
 
   // **建立內部表格**
   const innerTable = document.createElement("table");
@@ -247,6 +254,7 @@ function convertToTable(field, results) {
   // **建立 `tr` / `td`**
   for (let i = 0; i < results.length; i++) {
     const row = document.createElement("tr");
+    row.style.border = "none"; // 外框
 
     const cell = document.createElement("td");
     if (i > 0) {

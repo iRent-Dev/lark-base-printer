@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { bitable } from "@lark-base-open/js-sdk";
 import Editor from "@tinymce/tinymce-vue";
 import TemplateManager from "@/components/TemplateManager.vue";
 import EditorToolBar from "@/components/EditorToolBar.vue";
@@ -128,8 +129,14 @@ export default {
       this.updateEditorStyle();
     },
   },
-  mounted() {
+  async mounted() {
     this.toggleEditorMode();
+    let self = this;
+    // 加入事件
+    bitable.base.onSelectionChange(async (event) => {
+      self.content = await applyTemplate(this.content);
+      console.log("current selection", event);
+    });
   },
   methods: {
     async toggleEditorMode() {
@@ -152,13 +159,9 @@ export default {
           iframe.style.userSelect = "text"; // 恢復選取
           iframe.contentDocument.body.style.cursor = "text"; // 顯示游標
         } else {
-          // iframe.style.height = "10000px"; // 修復高度
-          // console.log("here");
-          // iframe.style.overflowY = "scroll"; // 允許垂直滾動
           iframe.style.pointerEvents = "none"; // 禁止點擊與聚焦
           iframe.style.userSelect = "none"; // 禁止選取內容
           iframe.contentDocument.body.style.cursor = "default"; // 游標消失
-          // iframe.contentDocument.body.style.overflowY = "auto"; // 游標消失
         }
       }
     },
