@@ -86,12 +86,25 @@ export default {
   },
   mounted() {
     const token = localStorage.getItem("irent_token");
-    if (token) {
+    if (token && !this.isTokenExpired(token)) {
       this.isLoggedIn = true;
       this.loadTemplates();
     }
   },
   methods: {
+    isTokenExpired(token) {
+      if (!token) return true; // 沒有 Token 就當作過期
+
+      try {
+        const payloadBase64 = token.split(".")[1]; // 取得 Payload 部分
+        const decodedPayload = JSON.parse(atob(payloadBase64)); // 解析 JSON
+        const currentTime = Math.floor(Date.now() / 1000); // 取得當前時間（秒）
+
+        return decodedPayload.exp < currentTime; // 過期返回 true
+      } catch (e) {
+        return true; // 解析錯誤視為過期
+      }
+    },
     async loadTemplates() {
       const response = await axios.get(
         "https://app.larksuite.com.tw/api/src/user_template.php",

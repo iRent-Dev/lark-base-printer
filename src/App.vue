@@ -134,8 +134,9 @@ export default {
     let self = this;
     // 加入事件
     bitable.base.onSelectionChange(async (event) => {
+      console.log("selection change");
+      // console.log("current selection", event);
       self.content = await applyTemplate(this.content);
-      console.log("current selection", event);
     });
   },
   methods: {
