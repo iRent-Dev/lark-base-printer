@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="container">
+      <button @click="selectedRecord">勾選哪一個</button>
       <TemplateManager
         :is-edited="isEdited"
         v-model:content.sync="content"
@@ -140,6 +141,21 @@ export default {
     });
   },
   methods: {
+    async selectedRecord() {
+      const activeTable = await bitable.base.getActiveTable();
+      const selection = await bitable.base.getSelection();
+
+      const view = await activeTable.getViewById(selection.viewId);
+
+      let selectRecordList = await view.getSelectedRecordIdList();
+      console.log("selectRecordList", selectRecordList);
+
+      if (selectRecordList.length > 0) {
+        this.content = await applyTemplate(this.content, selectRecordList[0]);
+      } else {
+        console.log("no record selected");
+      }
+    },
     async toggleEditorMode() {
       this.isEdited = !this.isEdited;
       if (this.editorInstance) {

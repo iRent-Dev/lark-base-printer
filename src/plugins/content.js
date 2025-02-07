@@ -2,7 +2,7 @@ import { bitable, FieldType, ToastType } from "@lark-base-open/js-sdk";
 import { format as formatDate } from "date-fns";
 
 // **套用樣板**
-export async function applyTemplate(content) {
+export async function applyTemplate(content, selectRecordId = "") {
   const activeTable = await bitable.base.getActiveTable();
   const selection = await bitable.base.getSelection();
   // console.log("selection", selection);
@@ -19,8 +19,14 @@ export async function applyTemplate(content) {
   } else {
     const view = await activeTable.getViewById(selection.viewId);
     const recordIdList = await view.getVisibleRecordIdList();
+    // let selectRecordList = await view.getSelectedRecordIdList();
+
     recordId = recordIdList[0];
     // console.log("Not selection recordId", recordId);
+  }
+
+  if (selectRecordId) {
+    recordId = selectRecordId;
   }
 
   // console.log("recordId", recordId);
