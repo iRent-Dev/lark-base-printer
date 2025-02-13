@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="container">
-      <button @click="selectedRecord">勾選哪一個</button>
       <TemplateManager
         :is-edited="isEdited"
         v-model:content.sync="content"
@@ -55,6 +54,8 @@ export default {
   },
   data() {
     return {
+      intervalId: null,
+      count: 0,
       isEdited: false,
       selectedTemplate: null,
       isOpenDrawer: false,
@@ -133,27 +134,23 @@ export default {
   async mounted() {
     this.toggleEditorMode();
     let self = this;
-    // 加入事件
-    bitable.base.onSelectionChange(async (event) => {
-      console.log("selection change");
-      // console.log("current selection", event);
-      self.content = await applyTemplate(this.content);
-    });
+
+    this.selectedRecord();
+
+    setInterval(() => {
+      self.selectedRecord();
+    }, 1000);
   },
   methods: {
     async selectedRecord() {
       const activeTable = await bitable.base.getActiveTable();
       const selection = await bitable.base.getSelection();
-
       const view = await activeTable.getViewById(selection.viewId);
 
       let selectRecordList = await view.getSelectedRecordIdList();
-      console.log("selectRecordList", selectRecordList);
 
       if (selectRecordList.length > 0) {
         this.content = await applyTemplate(this.content, selectRecordList[0]);
-      } else {
-        console.log("no record selected");
       }
     },
     async toggleEditorMode() {
