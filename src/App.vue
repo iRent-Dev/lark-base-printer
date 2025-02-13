@@ -150,7 +150,11 @@ export default {
       let selectRecordList = await view.getSelectedRecordIdList();
 
       if (selectRecordList.length > 0) {
-        this.content = await applyTemplate(this.content, selectRecordList[0]);
+        if (this.isEdited) {
+          this.content = await revertTemplate(this.content);
+        } else {
+          this.content = await applyTemplate(this.content, selectRecordList[0]);
+        }
       }
     },
     async toggleEditorMode() {
