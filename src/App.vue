@@ -135,11 +135,21 @@ export default {
     this.toggleEditorMode();
     let self = this;
 
-    this.selectedRecord();
+    bitable.base.onSelectionChange(async (event) => {
+      if (this.isEdited) {
+        self.content = await revertTemplate(this.content);
+      } else {
+        self.content = await applyTemplate(this.content);
+      }
+    });
 
-    setInterval(() => {
+    this.selectedRecord();
+    this.intervalId = setInterval(() => {
       self.selectedRecord();
     }, 1000);
+  },
+  onUnmounted() {
+    clearInterval(this.intervalId);
   },
   methods: {
     async selectedRecord() {
