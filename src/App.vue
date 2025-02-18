@@ -237,3 +237,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.template-field {
+  max-width: fit-content !important;
+}
+</style>

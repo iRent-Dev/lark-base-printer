@@ -29,5 +29,5 @@ body {
 }
 
 .template-field {
-  max-width: fit-content;
+  max-width: fit-content !important;
 }

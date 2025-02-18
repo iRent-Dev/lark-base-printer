@@ -92,3 +92,9 @@ export default {
   components: { FieldCard, FieldCollapse },
 };
 </script>
+
+<style scoped>
+.template-field {
+  max-width: fit-content !important;
+}
+</style>
