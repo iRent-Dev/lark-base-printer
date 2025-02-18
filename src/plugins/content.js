@@ -101,6 +101,7 @@ export async function applyTemplate(content, selectRecordId = "") {
         }
       }
     } catch (error) {
+      console.error(error);
       field.style.color = "red";
       field.innerText = "無法取得欄位資料";
     }

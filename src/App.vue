@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="container">
+      <!-- <BatchDialog v-model:dialogVisible.sync="dialogVisible" /> -->
       <TemplateManager
         :is-edited="isEdited"
         v-model:content.sync="content"
@@ -40,6 +41,7 @@ import TemplateManager from "@/components/TemplateManager.vue";
 import EditorToolBar from "@/components/EditorToolBar.vue";
 import LarkFieldsList from "@/components/LarkFieldsList.vue";
 import PrintSettingsDialog from "@/components/PrintSettingsDialog.vue";
+import BatchDialog from "./components/BatchDialog.vue";
 
 import { registerButtons } from "@/plugins/tinymce-plugins";
 import { applyTemplate, revertTemplate } from "@/plugins/content";
@@ -51,9 +53,11 @@ export default {
     TemplateManager,
     LarkFieldsList,
     PrintSettingsDialog,
+    BatchDialog,
   },
   data() {
     return {
+      dialogVisible: false,
       intervalId: null,
       count: 0,
       isEdited: false,
@@ -165,6 +169,12 @@ export default {
         } else {
           this.content = await applyTemplate(this.content, selectRecordList[0]);
         }
+      }
+
+      if (selectRecordList.length > 1) {
+        this.dialogVisible = true;
+      } else {
+        this.dialogVisible = false;
       }
     },
     async toggleEditorMode() {
