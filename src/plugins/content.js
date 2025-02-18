@@ -32,6 +32,7 @@ export async function applyTemplate(content, selectRecordId = "") {
   // console.log("recordId", recordId);
 
   for (let field of fields) {
+    field.style.maxWidth = "fit-content";
     field.style.color = "inherit";
     const tableId = field.getAttribute("data-tableid");
     const fieldId = field.getAttribute("data-fieldid");
@@ -117,6 +118,7 @@ export function revertTemplate(content) {
   const fields = doc.querySelectorAll(".template-field");
 
   for (let field of fields) {
+    field.style.maxWidth = "fit-content";
     const data = field.getAttribute("data-fieldname");
     field.innerText = `{{${data}}}` || "[無資料]";
   }
