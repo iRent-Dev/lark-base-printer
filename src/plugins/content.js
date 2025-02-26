@@ -32,7 +32,7 @@ export async function applyTemplate(content, selectRecordId = "") {
   // console.log("recordId", recordId);
 
   for (let field of fields) {
-    field.style.maxWidth = "fit-content";
+    // field.style.maxWidth = "fit-content";
     field.style.color = "inherit";
     const tableId = field.getAttribute("data-tableid");
     const fieldId = field.getAttribute("data-fieldid");
