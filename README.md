@@ -1,7 +1,18 @@
-# Vue 3 + Vite
+# Lark Base Printer
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+- 使用 Vue 撰寫
+- 使用 Github Page & Github action
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Highlight
+- `plugins/content.js` : 轉換編輯模式與顯示模式
+- `plugins/tinymce-plugins.js` : 擴充 `tinymce` 的自製與客製模組，目前是 `輸出 pdf`
 
-IF((QUOTIENT(([全天總工時(含午休)]-0.5),0.5))/2<=0,0,(QUOTIENT(([全天總工時(含午休)]-0.5),0.5))/2)
+
+## Components
+- `BatchDialog.vue` : 可以暫時不管他、那是之前我想要做批量顯示模式的部分
+- `EditorToolBar.vue`: 編輯器 toolbar
+- `FieldCard.vue` 和 `FieldCollapse.vue` : 欄位列表與關聯欄位
+- `LarkFieldsList.vue` : Lark 欄位列表
+- `Login.vue` 登入
+- `PrintSettingsDialog.vue`: 列印設定
+- `TemplateManager.vue`: 樣板管理
